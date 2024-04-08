@@ -1,75 +1,97 @@
 #include "../inc/Span.hpp"
 
-Span::Span() : _maxSize( 0 )
+Span::Span()
 {
-	_a = new int[_maxSize];
+	_vec.reserve(0);
 }
 
-Span::Span( unsigned int n ) : _maxSize( n )
+Span::Span( unsigned int n )
 {
-	_a = new int[_maxSize];
+	_vec.reserve(n);
 }
 
-Span::~Span()
+Span::Span( Span const &object )
 {
-	if (_a != nullptr)
-		delete[] _a;
+	*this = object;
 }
 
-Span::Span( const Span &obj )
-{
-	*this = obj;
-}
+Span::~Span() {}
 
-Span	Span&::operator=( const Span &obj )
+Span&	Span::operator=( Span const &object )
 {
-	if (this != &obj)
-	{
-		if (_a != nullptr)
-			delete[] _a;
-	}
-	for (int i = obj._a.begin(); i < obj._a.end(); i++)
-		_a[i] = obj._a[i];
+	_vec = object._vec;
 	return *this;
 }
 
-void	Span::addNumber( int nb )
+void	Span::addNumber( int n )
 {
-	if ( _a.end() == _maxSize )
+	if (_vec.size() == _vec.capacity())
 		throw MaxSizeReachedException();
-	if ( _a == nullptr )
-		_a[1] = nb;
-	else
-		_a[(_.end() + 1)] = nb;	
+	_vec.push_back(n);
+	//std::cout << "Added " << n << " to the container." << std::endl;
 }
 
-int		Span::shortestSpan()
+int&	Span::operator[]( unsigned int n )
 {
-	if ( _a == nullptr )
-		throw NoElementsStoredException();
-	else if ( _a.begin() == _a.end() )
-		throw OneElementStoredException();
-	int	diff = _a.end() - _a.begin();
-	std::sort(_a.begin(), _a.end());
-	//implement adjacent difference here
-	return diff;
+	if (n >= _vec.size())
+		throw std::out_of_range("Index out of range.");
+	return _vec[n];
 }
 
-int		Span::longestSpan()
+int		Span::shortestSpan( void )
 {
-	if ( _a == nullptr )
+	if (_vec.size() == 0)
 		throw NoElementsStoredException();
-	else if ( _a.begin() == _a.end() )
+	else if (_vec.size() == 1)
 		throw OneElementStoredException();
-	int	diff = 0;
-	std::sort(_a.begin(), _a.end());
-	//implement adjacent difference here
-	return diff;
+
+	std::vector<int>		tmp = _vec;
+	int						minSpan = abs(tmp[1] - tmp[0]);
+
+	std::sort(tmp.begin(), tmp.end());
+	for (size_t i = 0; i < tmp.size() - 1; i++)
+	{
+		if (abs(tmp[i + 1] - tmp[i]) < minSpan)
+			minSpan = abs(tmp[i + 1] - tmp[i]);
+	}
+
+	return minSpan;
+}
+
+int		Span::longestSpan( void )
+{
+	if (_vec.size() == 0)
+		throw NoElementsStoredException();
+	else if (_vec.size() == 1)
+		throw OneElementStoredException();
+
+	std::vector<int>	tmp = _vec;
+
+	std::sort(tmp.begin(), tmp.end());
+	int	maxSpan = abs(tmp[tmp.size() - 1] - tmp[0]);
+
+	return maxSpan;
+}
+
+void	Span::bulkAddNumbers( int begin, int end )
+{
+	if (_vec.size() == _vec.capacity() || _vec.size() + abs(end - begin) > _vec.capacity())
+		throw MaxSizeReachedException();
+
+	int		s = (end >= begin) ? 1 : -1;
+	for (int i = begin; i != end + s; i += s)
+	{
+		_vec.push_back(i);
+		if (begin == end)
+			break;
+	}
+	for (size_t i = 0; i < _vec.size(); i++)
+		std::cout << _vec[i] << std::endl;
 }
 
 const char *Span::MaxSizeReachedException::what(void) const throw()
 {
-	return "Container storage is full.";
+	return "Container capacity was reached.";
 }
 
 const char *Span::NoElementsStoredException::what(void) const throw()

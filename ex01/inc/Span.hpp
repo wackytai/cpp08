@@ -1,23 +1,26 @@
 #ifndef SPAN_HPP
 # define SPAN_HPP
 # include <iostream>
-# include <limits>
+# include <vector>
+# include <algorithm>
+# include <numeric>
+# include <exception>
 
 class Span
 {
 	private:
-		int				*_a;
-		unsigned int	_maxSize;
-
+		std::vector<int>	_vec;
 	public:
 		Span();
 		Span( unsigned int n );
+		Span( Span const &object );
 		~Span();
-		Span( const Span &obj );
-		Span	&operator=( const Span &obj );
-		void	addNumber( int nb );
-		int		shortestSpan();
-		int		longestSpan();
+		Span	&operator=( Span const &object );
+		int		&operator[]( unsigned int n );
+		void	addNumber( int n );
+		int		shortestSpan( void );
+		int		longestSpan( void );
+		void	bulkAddNumbers( int begin, int end );
 	class MaxSizeReachedException : public std::exception
 	{
 		public:
