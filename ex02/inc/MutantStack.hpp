@@ -9,4 +9,6 @@ class MutantStack : public std::stack
 
 };
 
+#define MutantStack.tpp
+
 #endif
