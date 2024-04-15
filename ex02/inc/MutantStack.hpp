@@ -5,13 +5,16 @@
 # include <list>
 
 template<typename T>
-class MutantStack : public std::stack<int>
+class MutantStack : public std::stack<T>
 {
 	public:
 		MutantStack();
-		MutantStack(MutantStack const &object);
+		MutantStack(MutantStack<T> const &object);
 		~MutantStack();
-		MutantStack &operator=(MutantStack const &object);
+		MutantStack<T> &operator=(MutantStack<T> const &object);
+		typedef typename std::deque<T>::iterator iterator;
+		iterator begin();
+		iterator end();
 };
 
 #define MutantStack.tpp
